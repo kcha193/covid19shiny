@@ -72,15 +72,35 @@ ui <- dashboardPage( skin = "black",
     
     column(
       width = 12,
+    tabBox(
+        tabPanel("Daily data from Johns Hopkins CSSE",
       box(
-        title = "Daily data from Johns Hopkins CSSE",
+        title = "Global",
         valueBoxOutput("global_Total", 3),
         valueBoxOutput("global_Death", 3),
         valueBoxOutput("global_Recovered", 3),
         valueBoxOutput("global_Active", 3),
+    
         width = 12
       ),
-      tabBox(
+       box(
+        title = "USA",
+        valueBoxOutput("US_Total", 3),
+        valueBoxOutput("US_Death", 3),
+        valueBoxOutput("US_Recovered", 3),
+        valueBoxOutput("US_Active", 3),
+        width = 12
+      ),
+      
+       box(
+        title = "UK",
+        valueBoxOutput("UK_Total", 3),
+        valueBoxOutput("UK_Death", 3),
+        valueBoxOutput("UK_Recovered", 3),
+        valueBoxOutput("UK_Active", 3),
+        width = 12
+      )),
+      
         tabPanel(
           "Treemap",
           highchartOutput("treemap_global",  height = "680px")
@@ -224,6 +244,262 @@ server <- function(input, output, session) {
     )
     
   })
+  
+  output$US_Total <- renderValueBox({
+   
+    latest <- 
+    global_cases %>% 
+      filter(`Country/Region` == "US") %>% 
+      rename(  Count = last_col()) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count)
+    
+    yesterday <- 
+      global_cases %>% 
+      filter(`Country/Region` == "US") %>% 
+      rename(  Count = last_col(1)) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count)
+    
+    change <- latest - yesterday
+    
+    valueBox(
+      scales::comma(latest), 
+      subtitle =
+        paste0(" (", 
+               ifelse(change >= 0, "+", "-"), 
+               scales::comma(abs(change)), ") cases globally"),
+      
+      color = "red"
+    )
+ 
+  })
+  
+  output$US_Active <- renderValueBox({
+    
+    latest <- 
+      global_cases%>% 
+      filter(`Country/Region` == "US") %>%  
+      rename(  Count = last_col()) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count) - 
+      global_recovered%>% 
+      filter(`Country/Region` == "US") %>% 
+      rename(  Count = last_col()) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count)
+    
+    yesterday <- 
+      global_cases%>% 
+      filter(`Country/Region` == "US") %>% 
+      rename(  Count = last_col(1)) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count) - 
+      global_recovered%>% 
+      filter(`Country/Region` == "US") %>%  
+      rename(  Count = last_col(1)) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count)
+    
+    change <- latest - yesterday
+    
+    valueBox(
+      scales::comma(latest), 
+      subtitle =
+        paste0(" (", 
+               ifelse(change >= 0, "+", "-"), 
+               scales::comma(abs(change)), ") active cases globally"),
+      
+      color = "yellow"
+    )
+    
+  })
+  
+  output$US_Death <- renderValueBox({
+    
+    latest <- 
+      global_deaths%>% 
+      filter(`Country/Region` == "US") %>%  
+      rename(  Count = last_col()) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count)
+    
+    yesterday <- 
+      global_deaths %>% 
+      filter(`Country/Region` == "US") %>% 
+      rename(  Count = last_col(1)) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count)
+    
+    change <- latest - yesterday
+    
+    valueBox(
+      scales::comma(latest), 
+      subtitle =
+        paste0(" (", 
+               ifelse(change >= 0, "+", "-"), 
+               scales::comma(abs(change)), ") deaths globally"),
+      
+      color = "blue"
+    ) })
+  
+  output$US_Recovered <- renderValueBox({
+    
+    latest <- 
+      global_recovered %>% 
+      filter(`Country/Region` == "US") %>% 
+      rename(  Count = last_col()) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count)
+    
+    yesterday <- 
+      global_recovered %>% 
+      filter(`Country/Region` == "US") %>% 
+      rename(  Count = last_col(1)) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count)
+    
+    change <- latest - yesterday
+    
+    valueBox(
+      scales::comma(latest), 
+      subtitle =
+        paste0(" (", 
+               ifelse(change >= 0, "+", "-"), 
+               scales::comma(abs(change)), ") recovered globally"),
+      
+      color = "green"
+    )
+    
+  })  
+
+  output$UK_Total <- renderValueBox({
+   
+    latest <- 
+    global_cases %>% 
+      filter(`Country/Region` == "United Kingdom") %>% 
+      rename(  Count = last_col()) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count)
+    
+    yesterday <- 
+      global_cases %>% 
+      filter(`Country/Region` == "United Kingdom") %>% 
+      rename(  Count = last_col(1)) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count)
+    
+    change <- latest - yesterday
+    
+    valueBox(
+      scales::comma(latest), 
+      subtitle =
+        paste0(" (", 
+               ifelse(change >= 0, "+", "-"), 
+               scales::comma(abs(change)), ") cases globally"),
+      
+      color = "red"
+    )
+ 
+  })
+  
+  output$UK_Active <- renderValueBox({
+    
+    latest <- 
+      global_cases%>% 
+      filter(`Country/Region` == "United Kingdom") %>%  
+      rename(  Count = last_col()) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count) - 
+      global_recovered%>% 
+      filter(`Country/Region` == "United Kingdom") %>% 
+      rename(  Count = last_col()) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count)
+    
+    yesterday <- 
+      global_cases%>% 
+      filter(`Country/Region` == "United Kingdom") %>% 
+      rename(  Count = last_col(1)) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count) - 
+      global_recovered%>% 
+      filter(`Country/Region` == "United Kingdom") %>%  
+      rename(  Count = last_col(1)) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count)
+    
+    change <- latest - yesterday
+    
+    valueBox(
+      scales::comma(latest), 
+      subtitle =
+        paste0(" (", 
+               ifelse(change >= 0, "+", "-"), 
+               scales::comma(abs(change)), ") active cases globally"),
+      
+      color = "yellow"
+    )
+    
+  })
+  
+  output$UK_Death <- renderValueBox({
+    
+    latest <- 
+      global_deaths%>% 
+      filter(`Country/Region` == "United Kingdom") %>%  
+      rename(  Count = last_col()) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count)
+    
+    yesterday <- 
+      global_deaths %>% 
+      filter(`Country/Region` == "United Kingdom") %>% 
+      rename(  Count = last_col(1)) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count)
+    
+    change <- latest - yesterday
+    
+    valueBox(
+      scales::comma(latest), 
+      subtitle =
+        paste0(" (", 
+               ifelse(change >= 0, "+", "-"), 
+               scales::comma(abs(change)), ") deaths globally"),
+      
+      color = "blue"
+    ) })
+  
+  output$UK_Recovered <- renderValueBox({
+    
+    latest <- 
+      global_recovered %>% 
+      filter(`Country/Region` == "United Kingdom") %>% 
+      rename(  Count = last_col()) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count)
+    
+    yesterday <- 
+      global_recovered %>% 
+      filter(`Country/Region` == "United Kingdom") %>% 
+      rename(  Count = last_col(1)) %>% 
+      summarise( Count = sum(Count)) %>% 
+      pull(Count)
+    
+    change <- latest - yesterday
+    
+    valueBox(
+      scales::comma(latest), 
+      subtitle =
+        paste0(" (", 
+               ifelse(change >= 0, "+", "-"), 
+               scales::comma(abs(change)), ") recovered globally"),
+      
+      color = "green"
+    )
+    
+  })  
   
   global_data_final <-
     reactive({
