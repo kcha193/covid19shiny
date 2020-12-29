@@ -5,12 +5,10 @@ library(shinydashboard)
 library(highcharter)
 library(purrr)
 
-source("get_data.R")
 
 last_date <- as.Date(global_cases %>% 
                         names() %>% 
                         last(), "%m/%d/%y")
-
 
 global_cases %>%
         rename(State =  'Province/State',
