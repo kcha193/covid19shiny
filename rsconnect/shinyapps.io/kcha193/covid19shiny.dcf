@@ -5,8 +5,8 @@ account: kcha193
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3434568
-bundleId: 4039547
+bundleId: 4040368
 url: https://kcha193.shinyapps.io/covid19shiny/
-when: 1609264935.07699
+when: 1609285315.57687
 asMultiple: FALSE
 asStatic: FALSE
