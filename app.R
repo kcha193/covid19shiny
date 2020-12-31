@@ -3,8 +3,6 @@
 library(shiny)
 library(shinydashboard)
 library(highcharter)
-library(purrr)
-
 
 # User interface
 ui <- dashboardPage(
@@ -153,8 +151,6 @@ server <- function(input, output, session) {
   
   output$line_plot <- 
     renderHighchart({
-
-      
       hchart(global_data_final() ,
              "line",
              hcaes(x = Date, y = Count, group = Country)) 
@@ -163,7 +159,6 @@ server <- function(input, output, session) {
 
 # Barchart for different countries ----------------------------------------
 
-  
   output$bar_plot <- 
     renderUI({
       
