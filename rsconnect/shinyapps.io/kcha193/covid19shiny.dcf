@@ -5,9 +5,9 @@ account: kcha193
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3434568
-bundleId: 4044941
+bundleId: 4052023
 url: https://kcha193.shinyapps.io/covid19shiny/
-when: 1609406636.40664
+when: 1609638048.76921
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: .Rprofile

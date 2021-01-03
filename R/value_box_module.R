@@ -1,11 +1,26 @@
 
 
+
+
 value_box_UI <- function(id, country = "Global") {
   ns <- NS(id)
   
   box(
     title = country,
-    valueBoxOutput(ns("N_Total"), 3),
+    valueBoxOutput(ns("N_Confirmed"), 3),
+    valueBoxOutput(ns("N_Death"), 3),
+    valueBoxOutput(ns("N_Recovered"), 3),
+    valueBoxOutput(ns("N_Active"), 3),
+    width = 12
+  )
+}
+
+value_box_UI <- function(id, country = "Global") {
+  ns <- NS(id)
+  
+  box(
+    title = country,
+    valueBoxOutput(ns("N_Confirmed"), 3),
     valueBoxOutput(ns("N_Death"), 3),
     valueBoxOutput(ns("N_Recovered"), 3),
     valueBoxOutput(ns("N_Active"), 3),
@@ -21,40 +36,37 @@ value_box_server <- function(id, country = "Global") {
     
     if(country != "Global"){
       
-      global_cases <- 
-        global_cases %>% 
-        filter(`Country/Region` == country)
-      
-      global_recovered <- 
-        global_recovered %>% 
-        filter(`Country/Region` == country)
-      
-      global_deaths <- 
-        global_deaths %>% 
-        filter(`Country/Region` == country)
-      
+      daily_cases_total <-
+        daily_cases_total %>% 
+        filter(Country == country)
+        
        textbox <- paste0("in ", country)
     } else {
+      
+      daily_cases_total <-
+        daily_cases_total %>% 
+        group_by(Type) %>% 
+        summarise(Count_lastest = sum(Count_lastest, na.rm = TRUE),
+                  Count_change = sum(Count_change, na.rm = TRUE),
+                  .groups = "drop")
+      
       
       textbox <- "globally"
     }
     
     
-    output$N_Total <- renderValueBox({
+    output$N_Confirmed <- renderValueBox({
   
+      
       latest <-
-        global_cases %>%
-        rename(Count = last_col()) %>%
-        summarise(Count = sum(Count)) %>%
-        pull(Count)
-      
-      yesterday <-
-        global_cases %>%
-        rename(Count = last_col(1)) %>%
-        summarise(Count = sum(Count)) %>%
-        pull(Count)
-      
-      change <- latest - yesterday
+        daily_cases_total %>% 
+        filter(Type == "Confirmed") %>%
+        pull(Count_lastest)
+
+      change <-
+        daily_cases_total %>% 
+        filter(Type == "Confirmed") %>%
+        pull(Count_change)
       
       valueBox(
         scales::comma(latest), 
@@ -71,26 +83,14 @@ value_box_server <- function(id, country = "Global") {
     output$N_Active <- renderValueBox({
       
       latest <-
-        global_cases %>%
-        rename(Count = last_col()) %>%
-        summarise(Count = sum(Count)) %>%
-        pull(Count) -
-        global_recovered %>%
-        rename(Count = last_col()) %>%
-        summarise(Count = sum(Count)) %>%
-        pull(Count)
-      
-      yesterday <-
-        global_cases %>%
-        rename(Count = last_col(1)) %>%
-        summarise(Count = sum(Count)) %>%
-        pull(Count) -
-        global_recovered %>%
-        rename(Count = last_col(1)) %>%
-        summarise(Count = sum(Count)) %>%
-        pull(Count)
-      
-      change <- latest - yesterday
+        daily_cases_total %>% 
+        filter(Type == "Active") %>%
+        pull(Count_lastest)
+
+      change <-
+        daily_cases_total %>% 
+        filter(Type == "Active") %>%
+        pull(Count_change)
       
       valueBox(
         scales::comma(latest), 
@@ -107,18 +107,14 @@ value_box_server <- function(id, country = "Global") {
     output$N_Death <- renderValueBox({
       
       latest <-
-        global_deaths %>%
-        rename(Count = last_col()) %>%
-        summarise(Count = sum(Count)) %>%
-        pull(Count)
-      
-      yesterday <-
-        global_deaths %>%
-        rename(Count = last_col(1)) %>%
-        summarise(Count = sum(Count)) %>%
-        pull(Count)
-      
-      change <- latest - yesterday
+        daily_cases_total %>% 
+        filter(Type == "Deaths") %>%
+        pull(Count_lastest)
+
+      change <-
+        daily_cases_total %>% 
+        filter(Type == "Deaths") %>%
+        pull(Count_change)
       
       valueBox(
         scales::comma(latest), 
@@ -133,19 +129,15 @@ value_box_server <- function(id, country = "Global") {
     output$N_Recovered <- renderValueBox({
       
       latest <-
-        global_recovered %>%
-        rename(Count = last_col()) %>%
-        summarise(Count = sum(Count)) %>%
-        pull(Count)
-      
-      yesterday <-
-        global_recovered %>%
-        rename(Count = last_col(1)) %>%
-        summarise(Count = sum(Count)) %>%
-        pull(Count)
-      
-      change <- latest - yesterday
-      
+        daily_cases_total %>% 
+        filter(Type == "Recovered") %>%
+        pull(Count_lastest)
+
+      change <-
+        daily_cases_total %>% 
+        filter(Type == "Recovered") %>%
+        pull(Count_change)
+
       valueBox(
         scales::comma(latest), 
         subtitle =
