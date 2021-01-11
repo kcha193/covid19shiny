@@ -12,6 +12,10 @@ filelist_us <-
   grep("csse_covid_19_data/csse_covid_19_daily_reports_us/([0-9]+)",
      filelist_raw, value = TRUE)
 
+dates_us <-
+  lubridate::mdy(gsub(".csv$", "", basename(filelist_us)))
+
+
 filelist <- 
   grep("csse_covid_19_data/csse_covid_19_daily_reports/([0-9]+)",
      filelist_raw, value = TRUE)
@@ -42,7 +46,7 @@ latest_daily_cases_us <-
   read_csv(
     paste0(
       "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/",
-      filelist_us[which(dates == max(dates, na.rm = TRUE))]
+      filelist_us[which(dates_us == max(dates_us, na.rm = TRUE))]
     )
   )
 
@@ -78,7 +82,7 @@ previous_daily_cases_us <-
   read_csv(
     paste0(
       "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/",
-      filelist_us[which(dates == sort(dates, decreasing = TRUE)[2])]
+      filelist_us[which(dates_us == sort(dates_us, decreasing = TRUE)[2])]
     )
   )
 
